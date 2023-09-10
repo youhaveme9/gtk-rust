@@ -1,5 +1,6 @@
 use gtk::prelude::*;
 use gtk::{glib, Application, ApplicationWindow, Button};
+use std::cell::Cell;
 
 const APP_ID: &str = "org.gtk_rs.HelloWorld1";
 
@@ -17,9 +18,19 @@ fn main() -> glib::ExitCode {
 
 fn build_ui(app: &Application) {
 
+    let number = Cell::new(0);
+
     // crteated a button with label and margin on all sides
     let button = Button::builder()
         .label("Press Me!")
+        .margin_top(20)
+        .margin_bottom(20)
+        .margin_start(20)
+        .margin_end(20)
+        .build();
+
+    let button_inc = Button::builder()
+        .label("Increase")
         .margin_top(20)
         .margin_bottom(20)
         .margin_start(20)
@@ -31,13 +42,23 @@ fn build_ui(app: &Application) {
         button.set_label("Hello World");  // changed the label of the button when it is clicked
     });
 
+    button_inc.connect_clicked(move |_| {number.set(number.get() +1);
+        println!("{:?}", number);
+    });
+
+    let gtk_box = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .build();
+    gtk_box.append(&button);
+    gtk_box.append(&button_inc);
+
     
 
     // creating a blank window and setting the title
     let window = ApplicationWindow::builder()
         .application(app)
         .title("My First GTK App")
-        .child(&button)
+        .child(&gtk_box)
         .build();
 
     // present the window to the screen
