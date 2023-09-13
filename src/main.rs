@@ -1,6 +1,8 @@
 use gtk::prelude::*;
-use gtk::{glib, Application, ApplicationWindow, Button};
+use gtk::{self, glib, Application, ApplicationWindow, Button};
 use std::cell::Cell;
+use std::rc::Rc;
+use glib::clone;
 
 const APP_ID: &str = "org.gtk_rs.HelloWorld1";
 
@@ -18,7 +20,7 @@ fn main() -> glib::ExitCode {
 
 fn build_ui(app: &Application) {
 
-    let number = Cell::new(0);
+    let number = Rc::new(Cell::new(0));
 
     // crteated a button with label and margin on all sides
     let button = Button::builder()
@@ -37,20 +39,38 @@ fn build_ui(app: &Application) {
         .margin_end(20)
         .build();
 
+    let button_dec = Button::builder()
+        .label("Decrease")
+        .margin_top(20)
+        .margin_bottom(20)
+        .margin_start(20)
+        .margin_end(20)
+        .build();
+
     // added an event listner to the button
     button.connect_clicked(|button| {
         button.set_label("Hello World");  // changed the label of the button when it is clicked
     });
 
-    button_inc.connect_clicked(move |_| {number.set(number.get() +1);
+    // button_inc.connect_clicked(clone!(@strong number => move |_| {
+    //     number.set(number.get() + 1);
+    // }));
+    // button_inc.connect_clicked(clone!(@strong number => move |_| {
+    //     number.set(number.get() +1);
+    //     println!("{:?}", number);
+    // }));
+    
+    button_dec.connect_clicked(move |_| {number.set(number.get() +1);
         println!("{:?}", number);
     });
+    
 
     let gtk_box = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .build();
     gtk_box.append(&button);
     gtk_box.append(&button_inc);
+    gtk_box.append(&button_dec);
 
     
 
